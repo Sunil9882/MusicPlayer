@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Player</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" integrity="sha512-PgQMlq+nqFLV4ylk1gwUOgm6CtIIXkKwaIHp/PAIWHzig/lKZSEGKEysh0TCVbHJXCLN7WetD8TFecIky75ZfQ==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="music.css">
+	</head>
+
+<body>
+    <div class="main_div">
+        <div class="Music_container">
+            <h2 id="title">Super Man</h2>
+            <h3 id="artist">Milinda Gaba</h3>
+            <div class="Img_container">
+                <img src="image/pex2.jpg" alt="" />
+            </div>
+            <audio src="music/Kala_Tikka_(Full_Song)__Gurnazar_feat_Milind_Gaba__Latest_Punjabi_Song_2016__Speed_Records(128k).m4a"></audio>
+            <!-- progress bar -->
+            <div class="progressbar_container" id="progress_container">
+                <div class="progress_duration_meter">
+                    <div id="current_time">0:00</div>
+                    <div id="duration">2:19</div>
+                </div>
+                <div class="progress_div" id="progress_div">
+                    <div class="progress" id="progress"></div>
+                </div>
+            </div>
+            <!-- Music controls -->
+            <!-- <div class="volume">
+                <i class="fas fa-volume-up" id="volume" title="volume"></i>
+                <div class="sound_bar">
+                    <div class="Sound_bar"></div>
+                </div>
+            </div> -->
+            <div class="music_controls">
+                <i class="fas fa-backward" id="prev" title="previous"></i>
+                <i class="fas fa-play mains_button" id="play" title="play"></i>
+                <i class="fas fa-forward" id="next" title="next"></i>
+
+            </div>
+        </div>
+    </div>
+    <script>
+        const music = document.querySelector("audio");
+        const img = document.querySelector("img");
+        const play = document.getElementById("play");
+        const artist = document.getElementById("artist");
+        const title = document.getElementById("title");
+        const prev = document.getElementById("prev");
+        const next = document.getElementById("next");
+        //const img = document.getElementById("img");
+        let progress = document.getElementById("progress");
+        let total_duration = document.getElementById("duration");
+        let current_time = document.getElementById("current_time");
+        const progress_div = document.getElementById("progress_div");
+		// put your own sound in this dictionary
+        const songs = [{
+                name: "Aaj_Mere_Yaar_Ki_Shaadi_Manne_Koi_Roko_Na__Sumit_Goswami(256k)",
+                title: "Rub",
+                artist: "Arjit shing",
+                img: "pex"
+            }, {
+                name: "_Peeyu_Datt_Ke_Video_Song__Yo_Yo_Honey_Singh__Sidharth_Malhotra,_Nushrat_Bharucha(256k)",
+                title: "Naina",
+                artist: "Palak muchal",
+                img: "pp"
+            }, {
+                name: "Gajban",
+                title: "Gajban",
+                artist: "Raju punjabi",
+                img: "maxresdefault"
+            },
+
+            {
+                name: "GLOCK_By_Mankirt_Aulakh_(Official_Song)_Latest_Punjabi_Songs_2019__GK_DIGITAL__Geet_MP3(256k)",
+                title: "Glock",
+                artist: "Mankirt_Aulakh",
+                img: "pex2"
+            },
+        ];
+
+        let isplay = false;
+        // for play function
+        const playMusic = () => {
+            isplay = true;
+            music.play();
+            play.classList.replace("fa-play", "fa-pause");
+            img.classList.add("anime");
+        };
+        // for pause function
+        const pauseMusic = () => {
+            isplay = false;
+            music.pause();
+            play.classList.replace("fa-pause", "fa-play");
+            // play.titlename.replace("play", "pause")
+            img.classList.remove("anime");
+        };
+
+        play.addEventListener('click', () => {
+            if (isplay) {
+                pauseMusic();
+            } else {
+                playMusic();
+            }
+        });
+        //change the music data
+        const loadSong = (songs) => {
+            title.textContent = songs.title;
+            artist.textContent = songs.artist;
+            music.src = "music/" + songs.name + ".mp3";
+            img.src = "image/" + songs.img + ".jpg";
+        };
+        // loadSong(songs[1]);
+        songIndex = 0;
+        const nextSong = () => {
+            songIndex = (songIndex + 1) % songs.length;
+            loadSong(songs[songIndex]);
+        };
+        const prevSong = () => {
+            songIndex = (songIndex - 1 + songs.length) % songs.length;
+            loadSong(songs[songIndex]);
+        };
+        // progress js work
+        music.addEventListener("timeupdate", (event) => {
+            // console.log(event);
+            const {
+                currentTime,
+                duration
+            } = event.srcElement;
+            // console.log(currentTime);
+            // console.log(duration);
+            let progress_time = (currentTime / duration) * 100;
+            progress.style.width = `${progress_time}%`;
+            //    music duration update
+            // console.log(duration);
+            let min_duration = Math.floor(duration / 60);
+            let sec_duration = Math.floor(duration % 60);
+
+            let tot_duration = `${min_duration}:${sec_duration}`;
+            if (duration) {
+                total_duration.textContent = `${tot_duration}`;
+            }
+            //    current music duration update
+            // console.log(duration);
+            let min_currentTime = Math.floor(currentTime / 60);
+            let sec_currentTime = Math.floor(currentTime % 60);
+            if (sec_currentTime < 10) {
+                sec_currentTime = `0${sec_currentTime}`;
+            }
+            let tot_currentTime = `${min_currentTime}:${sec_currentTime}`;
+            current_time.textContent = `${tot_currentTime}`;
+
+        });
+
+        // progress onclick functionalty
+        progress_div.addEventListener("click", (event) => {
+            console.log(event);
+            const {
+                duration
+            } = music;
+            // const duration = music.duration;
+            let move_progress = (event.offsetX / event.srcElement.clientWidth) * duration;
+            music.currentTime = move_progress;
+        });
+        // if music end call next song function
+        music.addEventListener("ended", nextSong);
+
+        // volime bar functionality
+        // volume.addEventListener("volume", (event) => {
+        //     // console.log(event);
+        //     current_volume;
+        // });
+        // volume.addEventListener("click", )
+        next.addEventListener("click", nextSong);
+        prev.addEventListener("click", prevSong);
+    </script>
+</body>
+
+</html>
